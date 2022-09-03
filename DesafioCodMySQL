@@ -1,0 +1,79 @@
+create database ecommerce;
+use ecommerce;
+
+-- Criar tabela Cliente
+create table cliente(
+	idCodCli int auto_increment primary key,
+    cliRazão_Social varchar(30) not null,
+    cliNome_Fantasia varchar(20) not null,
+    cliStatus char(1) not null,
+    cliCPFCNPJ char(14) not null,
+    cliEndereço varchar (100),
+    cliBairro varchar(20),
+    cliUF char(2),
+constraint unique_cliCPFCNPJ_cliente unique (cliCPFCNPJ)
+);
+
+-- Criar tabela Produto
+create table Produto(
+	idCodProduto int auto_increment primary key,
+    prodNome varchar(30) not null,
+    prodUnidade char(6),
+    prodUnidade_Master int,
+    Categoria varchar(20)
+);
+
+-- Criar tabela de Pagamento
+create table pagamento(
+	idcliente int,
+    idpagamento int,
+    pagData_Pagamento date,
+    pagTipo_Pagamento enum ('Boleto', 'Débido em Conta', 'Cartão Crédito', 'Cartão Débido', 'Dinheiro', 'PIX'),
+    pagValor float,
+    primary key (idcliente, idpagamento)   
+);
+
+-- Criar tabela Pedido
+create table pedido(
+	idpedido int auto_increment primary key,
+    pedCODRCA int,
+    pedCodCli int,
+    pedProduto varchar(30),
+    pedData_Pedido date,
+    pedValor_Pedido float default 70,
+    constraint fk_pedcodcli_cliente foreign key (pedcodcli) references cliente(idCodCli)
+);
+
+-- Criar uma tabela de Estoque
+create table EstoqueProduto (
+	idProdEstoque int auto_increment primary key,
+    estDescrição_Produto varchar(30),
+    estQuantidade int default 0
+);
+
+-- Criar tabela de fornecedor
+create table Fornecedor (
+	idFornecedor int auto_increment primary key,
+    forRazao_Social varchar(100),
+    forFantasia varchar(50),
+    forCNPJ char(15),
+    forContato char(9),
+    constraint unique_Fornecedor unique(forCNPJ)
+);
+
+-- Criar a tabela RCA
+create table Vendedor (
+	idCODRCA int auto_increment primary key,
+    vedNomeRCA varchar(50),
+    vedStatus char(1)     
+);
+
+-- Criar Tabela Produto Vendedor
+create table ProdutoRCA (
+	idCodRCA int,
+    idCodProduto int,
+    Quantidade int default 0,
+    primary key (idCodRCA, idCodProduto),
+    constraint fk_ProdutoRCA_Vendedor foreign key (idCodRCA) references Vendedor(idCODRCA),
+    constraint fk_ProdutoRCA_Produto foreign key (idCodProduto) references Produto(idCodProduto)
+);
